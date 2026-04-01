@@ -1,0 +1,51 @@
+<html>
+<head>
+    <title>Pure JS Styling</title>
+    <style>
+        /* Optional: Add a placeholder height so you can see where the form should be */
+        #hubspot-form-container { min-height: 100px; }
+    </style>
+</head>
+<body>
+
+<script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/embed/v2.js"></script>
+
+<div id="hubspot-form-container"></div>
+
+<script>
+hbspt.forms.create({
+    region: "na1",
+    portalId: "3277480",
+    formId: "f66c7df7-5532-4822-bb5d-34b76d6ee51f",
+    target: "#hubspot-form-container",
+    css: "", // This allows our local CSS/JS to work on the form
+
+    onFormReady: function($form) {
+        console.log("Form ready! Changing colors now...");
+
+        // 1. Show a popup to confirm the code is running
+        alert("Form loaded! Applying custom colors.");
+
+        // 2. Select the inputs (using the $form helper provided by HubSpot)
+        // We target text inputs, emails, and textareas
+        const inputs = $form.find('input[type="text"], input[type="email"], textarea');
+
+        // 3. Apply your custom styling
+        inputs.css({
+            "background-color": "#f0f8ff", // Light Blue background
+            "border": "2px solid #ff5733",  // Orange border
+            "color": "#333",                // Dark text
+            "padding": "10px",
+            "border-radius": "5px"
+        });
+
+        // 4. Change color on Focus (when user clicks in)
+        inputs.on('focus', function() {
+            $(this).css("border-color", "#007bff"); // Change to blue on click
+        });
+    }
+});
+</script>
+
+</body>
+</html>
