@@ -31,8 +31,10 @@
 
           var doc = iframe.contentDocument;
 
-          // ✅ Red border on the entire form
-          doc.querySelector('input[name="0-1/firstname"]').style.border = '2px solid red';
+var firstNameInput = doc.querySelector('#9d256f8d-8c90-4a15-b327-011ded493271-6-input');
+if (firstNameInput) {
+  firstNameInput.style.border = '2px solid red';
+}
         }
       }
     }
