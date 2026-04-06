@@ -4,20 +4,9 @@
 <div class="hs-form-frame" data-region="na2" data-form-id="adf6daa9-5713-4815-851e-b503caa30190" data-portal-id="245775901"></div>
 <script>
   window.addEventListener('message', function(event) {
-    // Make sure the message is from HubSpot
-    if (
-      event.origin.includes('hsforms.com') || 
-      event.origin.includes('hsforms.net')
-    ) {
-      if (
-        event.data && 
-        event.data.type === 'hsFormCallback' && 
-        event.data.eventName === 'onFormReady'
-      ) {
-        console.log('HubSpot V3 form is ready!');
-        alert('Form has been loaded!');
-      }
-    }
+    // Log EVERYTHING to see what HubSpot is actually sending
+    console.log('Message origin:', event.origin);
+    console.log('Message data:', JSON.stringify(event.data));
   });
 </script>
 
