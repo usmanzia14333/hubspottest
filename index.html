@@ -33,7 +33,7 @@
 
 var doc = iframe.contentDocument;
 
-var firstNameInput = doc.getElementsByName('0-1/firstname')[0];
+var firstNameInput = doc.querySelector('input[name="0-1\\/firstname"]');
 if (firstNameInput) {
   firstNameInput.style.border = '2px solid red';
 }
