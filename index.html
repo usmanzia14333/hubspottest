@@ -9,32 +9,32 @@
 </div>
 
 <script>
-  // Method 1: postMessage listener (remove origin filter for now)
-  window.addEventListener('message', function(event) {
-    console.log('RAW event:', event.origin, event.data);
+  var formLoaded = false;
 
-    if (event.data && typeof event.data === 'object') {
-      // Try both possible event structures HubSpot uses
-      if (
-        event.data.eventName === 'onFormReady' ||
-        event.data.type === 'hsFormCallback' ||
-        (event.data.id && event.data.id.includes('adf6daa9'))
-      ) {
-        console.log('Form ready triggered!');
-        alert('Form has been loaded!');
-      }
-    }
-  });
-
-  // Method 2: Fallback — poll until the iframe appears in DOM
   var checkForm = setInterval(function() {
     var iframe = document.querySelector('.hs-form-frame iframe');
+
     if (iframe) {
-      clearInterval(checkForm);
-      console.log('Form iframe detected via polling!');
-      alert('Form has been loaded! (via poll)');
+      // Make sure iframe is fully loaded, not just inserted into DOM
+      if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
+        if (!formLoaded) {
+          formLoaded = true;          // prevent alert from firing twice
+          clearInterval(checkForm);
+
+          console.log('HubSpot V3 form fully loaded!');
+          alert('Form has been loaded!');
+
+          // ✅ Do your custom DOM changes here
+          // Example: access form elements inside iframe
+          // var innerForm = iframe.contentDocument.querySelector('form');
+          // var inputs = iframe.contentDocument.querySelectorAll('input');
+        }
+      }
     }
   }, 300);
+
+  // Safety: stop polling after 15 seconds to avoid infinite loop
+  setTimeout(function() {
+    clearInterval(checkForm);
+  }, 15000);
 </script>
-
-
