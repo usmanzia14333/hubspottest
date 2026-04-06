@@ -28,28 +28,8 @@
           // Example: access form elements inside iframe
           // var innerForm = iframe.contentDocument.querySelector('form');
           // var inputs = iframe.contentDocument.querySelectorAll('input');
-// Log ALL iframes on the page
-var allIframes = document.querySelectorAll('iframe');
-console.log('Total iframes:', allIframes.length);
-allIframes.forEach(function(iframe, index) {
-  console.log('Iframe', index, '| src:', iframe.src, '| class:', iframe.className, '| id:', iframe.id);
-});
-         
-var doc = iframe.contentDocument;
 
-// Check if doc is accessible
-console.log('doc:', doc);
-console.log('readyState:', doc.readyState);
 
-// Check if form exists
-console.log('form:', doc.querySelector('form'));
-
-// Log ALL inputs
-var inputs = doc.getElementsByTagName('input');
-console.log('Total inputs found:', inputs.length);
-for (var i = 0; i < inputs.length; i++) {
-  console.log('Input:', inputs[i].name, inputs[i]);
-}
         }
       }
     }
