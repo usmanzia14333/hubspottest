@@ -1,25 +1,28 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>Page Title</title>
-</head>
-<body>
+<!-- HubSpot V3 Embed -->
+<script src="https://js-na2.hsforms.net/forms/embed/3277480.js" defer></script>
 
-<div id="hubspot-form"></div>
+<div 
+  class="hs-form-frame" 
+  data-region="na2" 
+  data-form-id="f66c7df7-5532-4822-bb5d-34b76d6ee51f" 
+  data-portal-id="3277480">
+</div>
 
-<script charset="utf-8" type="text/javascript" src="//js-na2.hsforms.net/forms/embed/v2.js"></script>
 <script>
-  hbspt.forms.create({
-    portalId: "2661279",
-    formId: "05077497-4f6c-4500-a5e7-3e732733bdd6",
-    region: "na2",
-	target: "#hubspot-form",
-	onFormReady: function ($form) {
-		console.log('test');
-		alert("Form has been loaded!");
-	}
+  window.addEventListener('message', function(event) {
+    // Make sure the message is from HubSpot
+    if (
+      event.origin.includes('hsforms.com') || 
+      event.origin.includes('hsforms.net')
+    ) {
+      if (
+        event.data && 
+        event.data.type === 'hsFormCallback' && 
+        event.data.eventName === 'onFormReady'
+      ) {
+        console.log('HubSpot V3 form is ready!');
+        alert('Form has been loaded!');
+      }
+    }
   });
 </script>
-
-</body>
-</html>
