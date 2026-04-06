@@ -30,12 +30,20 @@
           // var inputs = iframe.contentDocument.querySelectorAll('input');
 
          
-
 var doc = iframe.contentDocument;
 
-var firstNameInput = doc.querySelector('input[name="0-1\\/firstname"]');
-if (firstNameInput) {
-  firstNameInput.style.border = '2px solid red';
+// Check if doc is accessible
+console.log('doc:', doc);
+console.log('readyState:', doc.readyState);
+
+// Check if form exists
+console.log('form:', doc.querySelector('form'));
+
+// Log ALL inputs
+var inputs = doc.getElementsByTagName('input');
+console.log('Total inputs found:', inputs.length);
+for (var i = 0; i < inputs.length; i++) {
+  console.log('Input:', inputs[i].name, inputs[i]);
 }
         }
       }
