@@ -1,48 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>HubSpot Form</title>
+<title>Page Title</title>
 </head>
 <body>
-  <h2>HubSpot Form</h2>
-  <div class="hs-form-frame"
-       data-region="na2"
-       data-form-id="f66c7df7-5532-4822-bb5d-34b76d6ee51f"
-       data-portal-id="3277480">
-  </div>
-  <script src="https://js-na2.hsforms.net/forms/embed/3277480.js"></script>
-  <script>
-    var observer = new MutationObserver(function() {
-      var iframe = document.querySelector('.hs-form-frame iframe');
-      if (iframe) {
-        observer.disconnect();
 
-        iframe.addEventListener('load', function() {
-          iframe.contentWindow.postMessage({
-            type: 'hsFormCallback',
-            eventName: 'injectCSS',
-            css: 'input, select, textarea { border: 1px solid red !important; outline: 1px solid red !important; }'
-          }, '*');
 
-          // Direct inject try
-          try {
-            var iDoc = iframe.contentDocument || iframe.contentWindow.document;
-            var style = iDoc.createElement('style');
-            style.innerHTML = 'input, select, textarea { border: 1px solid red !important; }';
-            iDoc.head.appendChild(style);
-            console.log('CSS inject ho gai!');
-          } catch(e) {
-            console.log('Error: ' + e.message);
-          }
-        });
-      }
-    });
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  </script>
+<div id="hubspot-form"></div>
+
+<script charset="utf-8" type="text/javascript" src="//js.hsforms.net/forms/embed/v2.js"></script>
+<script>
+  hbspt.forms.create({
+    portalId: "245775901",
+    formId: "adf6daa9-5713-4815-851e-b503caa30190",
+    region: "na2",
+	target: "#hubspot-form",
+	onFormReady: function ($form) {
+		console.log('test');
+	}
+  });
+</script>
+
+
 </body>
 </html>
