@@ -28,6 +28,11 @@
           // Example: access form elements inside iframe
           // var innerForm = iframe.contentDocument.querySelector('form');
           // var inputs = iframe.contentDocument.querySelectorAll('input');
+
+          var doc = iframe.contentDocument;
+
+          // ✅ Red border on the entire form
+          doc.querySelector('form').style.border = '2px solid red';
         }
       }
     }
