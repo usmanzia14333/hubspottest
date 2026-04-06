@@ -29,9 +29,11 @@
           // var innerForm = iframe.contentDocument.querySelector('form');
           // var inputs = iframe.contentDocument.querySelectorAll('input');
 
-          var doc = iframe.contentDocument;
+         
 
-var firstNameInput = doc.querySelector('#9d256f8d-8c90-4a15-b327-011ded493271-6-input');
+var doc = iframe.contentDocument;
+
+var firstNameInput = doc.getElementsByName('0-1/firstname')[0];
 if (firstNameInput) {
   firstNameInput.style.border = '2px solid red';
 }
