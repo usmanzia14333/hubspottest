@@ -1,14 +1,40 @@
 <!-- HubSpot V3 Embed -->
 <script src="https://js-na2.hsforms.net/forms/embed/245775901.js" defer></script>
 
-<div class="hs-form-frame" data-region="na2" data-form-id="adf6daa9-5713-4815-851e-b503caa30190" data-portal-id="245775901"></div>
-<script>
-  window.addEventListener('message', function(event) {
-    // Log EVERYTHING to see what HubSpot is actually sending
-    console.log('Message origin:', event.origin);
-    console.log('Message data:', JSON.stringify(event.data));
-  });
-</script>
+<div 
+  class="hs-form-frame" 
+  data-region="na2" 
+  data-form-id="adf6daa9-5713-4815-851e-b503caa30190" 
+  data-portal-id="245775901">
+</div>
 
+<script>
+  // Method 1: postMessage listener (remove origin filter for now)
+  window.addEventListener('message', function(event) {
+    console.log('RAW event:', event.origin, event.data);
+
+    if (event.data && typeof event.data === 'object') {
+      // Try both possible event structures HubSpot uses
+      if (
+        event.data.eventName === 'onFormReady' ||
+        event.data.type === 'hsFormCallback' ||
+        (event.data.id && event.data.id.includes('adf6daa9'))
+      ) {
+        console.log('Form ready triggered!');
+        alert('Form has been loaded!');
+      }
+    }
+  });
+
+  // Method 2: Fallback — poll until the iframe appears in DOM
+  var checkForm = setInterval(function() {
+    var iframe = document.querySelector('.hs-form-frame iframe');
+    if (iframe) {
+      clearInterval(checkForm);
+      console.log('Form iframe detected via polling!');
+      alert('Form has been loaded! (via poll)');
+    }
+  }, 300);
+</script>
 
 
