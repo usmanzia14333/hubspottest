@@ -1,41 +1,50 @@
-<!-- 1. Use the STABLE global script (No Portal ID in the filename) -->
-<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
+<!-- 1. Use the most stable global script endpoint -->
+<script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/v2.js"></script>
 
-<!-- 2. Target container -->
-<div id="form-target-container"></div>
+<!-- 2. This is where your form will load -->
+<div id="hubspot-form-target"></div>
 
-<!-- 3. Bulletproof Injector -->
 <script>
-  function injectHubSpot() {
-    // Check if the hbspt library is finally loaded
-    if (typeof hbspt !== 'undefined') {
+  // Ensure the HubSpot library is ready before creating the form
+  function loadHubSpotForm() {
+    if (window.hbspt) {
       hbspt.forms.create({
         region: "na2",
         portalId: "245775901",
         formId: "adf6daa9-5713-4815-851e-b503caa30190",
-        target: "#form-target-container",
+        target: "#hubspot-form-target",
         onFormReady: function($form) {
-          // Reach inside the iframe document
-          const iframeDoc = $form.ownerDocument;
-          const style = iframeDoc.createElement('style');
+          // 'onFormReady' provides the form element inside the iframe.
+          // We grab its ownerDocument to access the iframe's <head>.
+          var iframeDoc = $form.ownerDocument;
+          var styleTag = iframeDoc.createElement('style');
           
-          // ADD YOUR CSS HERE - Use !important to override HubSpot defaults
-          style.innerHTML = `
-            .hs-button { background: #ff0000 !important; border: none !important; color: #fff !important; }
-            .hs-form-field label { color: blue !important; font-weight: bold !important; }
-            input.hs-input { border: 1px solid #333 !important; border-radius: 4px !important; }
+          // ADD YOUR CSS HERE
+          // Use !important on everything to override HubSpot's internal styles.
+          styleTag.innerHTML = `
+            .hs-button { 
+               background: #ff0000 !important; 
+               border-radius: 0px !important; 
+               font-weight: bold !important;
+            }
+            .hs-form-field label { 
+               color: blue !important; 
+               font-family: sans-serif !important;
+            }
+            input.hs-input { 
+               border: 2px solid #000 !important; 
+            }
           `;
           
-          iframeDoc.head.appendChild(style);
-          console.log("CSS injected successfully.");
+          iframeDoc.head.appendChild(styleTag);
+          console.log("CSS injected successfully into HubSpot iframe.");
         }
       });
     } else {
-      // If not ready, wait 100ms and try again
-      setTimeout(injectHubSpot, 100);
+      // If script isn't ready yet, check again in 100ms
+      setTimeout(loadHubSpotForm, 100);
     }
   }
-  
-  // Start the check
-  injectHubSpot();
+
+  loadHubSpotForm();
 </script>
