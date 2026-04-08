@@ -1,36 +1,37 @@
-<!-- 1. Load the HubSpot script WITHOUT "defer" so the hbspt variable is ready immediately -->
-<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
+<!-- 1. Use the GLOBAL v2.js script (required for custom JS callbacks) -->
+<!-- REMOVE your old .../245775901.js script -->
+<script charset="utf-8" type="text/javascript" src="https://js-na2.hsforms.net/forms/embed/v2.js"></script>
 
-<!-- 2. Define where the form should appear -->
-<div id="my-custom-form-container"></div>
+<!-- 2. The container where your form will load -->
+<div id="hubspot-form-container"></div>
 
-<!-- 3. Create the form and inject CSS -->
+<!-- 3. The script to load the form and inject your CSS -->
 <script>
-  hbspt.forms.create({
-    region: "na2",
-    portalId: "245775901",
-    formId: "adf6daa9-5713-4815-851e-b503caa30190",
-    target: "#my-custom-form-container", // Tells HubSpot where to put the form
-    onFormReady: function($form) {
-      // Access the document inside the iframe
-      var iframeDoc = $form[0].ownerDocument;
-      var head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
-      var style = iframeDoc.createElement('style');
-
-      // YOUR CUSTOM CSS GOES HERE
-      var css = `
-        .hs-button { background: #ff0000 !important; border: none !important; }
-        .hs-form-field label { color: blue !important; }
-        input[type="text"] { border-radius: 10px !important; }
-      `;
-
-      style.type = 'text/css';
-      if (style.styleSheet) {
-        style.styleSheet.cssText = css;
-      } else {
-        style.appendChild(iframeDoc.createTextNode(css));
-      }
-      head.appendChild(style);
+  // Ensure the HubSpot library is fully loaded before running
+  window.onload = function() {
+    if (typeof hbspt !== 'undefined') {
+      hbspt.forms.create({
+        region: "na2",
+        portalId: "245775901",
+        formId: "adf6daa9-5713-4815-851e-b503caa30190",
+        target: "#hubspot-form-container",
+        onFormReady: function($form) {
+          // Reach inside the iframe document
+          var iframeDoc = $form[0].ownerDocument; 
+          var style = iframeDoc.createElement('style');
+          
+          // ADD YOUR CSS HERE
+          style.innerHTML = `
+            .hs-button { background-color: #ff0000 !important; border-radius: 4px !important; }
+            .hs-form-field label { color: #333 !important; font-weight: 600 !important; }
+            input[type="text"], input[type="email"] { border: 2px solid #ccc !important; }
+          `;
+          
+          iframeDoc.head.appendChild(style);
+        }
+      });
+    } else {
+      console.error("HubSpot script (v2.js) failed to load.");
     }
-  });
+  };
 </script>
