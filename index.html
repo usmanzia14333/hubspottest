@@ -1,36 +1,37 @@
-<!-- 1. Load the core HubSpot library without "defer" -->
-<script charset="utf-8" type="text/javascript" src="https://js-na2.hsforms.net/forms/embed/v2.js"></script>
+<!-- 1. Use the standard v2.js loader -->
+<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
 
-<!-- 2. The container where the form will live -->
-<div id="form-container"></div>
+<!-- 2. This is where your form will appear -->
+<div id="target-form-here"></div>
 
-<!-- 3. Safe-load script that checks for hbspt every 100ms -->
+<!-- 3. The "Waiter" script -->
 <script>
-  (function runWhenReady() {
-    if (typeof hbspt !== 'undefined') {
-      hbspt.forms.create({
-        region: "na2",
-        portalId: "245775901",
-        formId: "adf6daa9-5713-4815-851e-b503caa30190",
-        target: "#form-container",
-        onFormReady: function($form) {
-          // Access the internal iframe document
-          var iframeDoc = $form.ownerDocument;
-          var style = iframeDoc.createElement('style');
-          
-          // Your custom CSS (with !important to override HubSpot defaults)
-          style.innerHTML = `
-            .hs-button { background: #ff0000 !important; border: none !important; color: #fff !important; }
-            .hs-form-field label { color: blue !important; font-weight: bold !important; }
-            input[type="text"], input[type="email"] { border: 1px solid #000 !important; }
-          `;
-          
-          iframeDoc.head.appendChild(style);
-        }
-      });
-    } else {
-      // If not ready, wait 100ms and try again
-      setTimeout(runWhenReady, 100);
-    }
-  })();
+(function waitForHubSpot() {
+  if (typeof hbspt !== 'undefined') {
+    hbspt.forms.create({
+      region: "na2",
+      portalId: "245775901",
+      formId: "adf6daa9-5713-4815-851e-b503caa30190",
+      target: "#target-form-here",
+      onFormReady: function($form) {
+        // Grab the actual document inside the iframe
+        const iframeDoc = $form[0].ownerDocument; 
+        const style = iframeDoc.createElement('style');
+        
+        // Use !important to crush HubSpot's default styles
+        style.innerHTML = `
+          .hs-button { background-color: #ff0000 !important; color: white !important; padding: 20px !important; }
+          .hs-form-field label { color: blue !important; font-size: 20px !important; }
+          input.hs-input { border: 2px solid green !important; }
+        `;
+        
+        iframeDoc.head.appendChild(style);
+        console.log("CSS successfully injected into iframe.");
+      }
+    });
+  } else {
+    // If hbspt isn't ready yet, check again in 50ms
+    setTimeout(waitForHubSpot, 50);
+  }
+})();
 </script>
