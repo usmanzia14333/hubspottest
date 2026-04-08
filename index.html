@@ -1,37 +1,33 @@
-<!-- 1. Use the standard v2.js loader -->
-<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
+<!-- 1. Use the STABLE global script -->
+<script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/v2.js"></script>
 
-<!-- 2. This is where your form will appear -->
-<div id="target-form-here"></div>
+<!-- 2. Target container -->
+<div id="form-target"></div>
 
-<!-- 3. The "Waiter" script -->
+<!-- 3. Bulletproof Loader -->
 <script>
-(function waitForHubSpot() {
-  if (typeof hbspt !== 'undefined') {
-    hbspt.forms.create({
-      region: "na2",
-      portalId: "245775901",
-      formId: "adf6daa9-5713-4815-851e-b503caa30190",
-      target: "#target-form-here",
-      onFormReady: function($form) {
-        // Grab the actual document inside the iframe
-        const iframeDoc = $form[0].ownerDocument; 
-        const style = iframeDoc.createElement('style');
-        
-        // Use !important to crush HubSpot's default styles
-        style.innerHTML = `
-          .hs-button { background-color: #ff0000 !important; color: white !important; padding: 20px !important; }
-          .hs-form-field label { color: blue !important; font-size: 20px !important; }
-          input.hs-input { border: 2px solid green !important; }
-        `;
-        
-        iframeDoc.head.appendChild(style);
-        console.log("CSS successfully injected into iframe.");
-      }
-    });
-  } else {
-    // If hbspt isn't ready yet, check again in 50ms
-    setTimeout(waitForHubSpot, 50);
+  function loadForm() {
+    if (typeof hbspt !== 'undefined') {
+      hbspt.forms.create({
+        region: "na2",
+        portalId: "245775901",
+        formId: "adf6daa9-5713-4815-851e-b503caa30190",
+        target: "#form-target",
+        onFormReady: function($form) {
+          // Inject styles directly into the iframe head
+          const doc = $form.ownerDocument;
+          const style = doc.createElement('style');
+          style.innerHTML = `
+            .hs-button { background: #ff0000 !important; border: none !important; }
+            .hs-form-field label { color: blue !important; }
+            input.hs-input { border: 2px solid #ccc !important; }
+          `;
+          doc.head.appendChild(style);
+        }
+      });
+    } else {
+      setTimeout(loadForm, 100);
+    }
   }
-})();
+  loadForm();
 </script>
