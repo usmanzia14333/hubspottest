@@ -1,36 +1,41 @@
-
-
-
-
-<script type="text/javascript" id="hs-script-loader" async defer src="//js-na2.hs-scripts.com/245775901.js"></script>
+<!-- 1. Use the STABLE global script (No Portal ID in the filename) -->
+<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
 
 <!-- 2. Target container -->
-<div id="form-target"></div>
+<div id="form-target-container"></div>
 
-<!-- 3. Bulletproof Loader -->
+<!-- 3. Bulletproof Injector -->
 <script>
-  function loadForm() {
+  function injectHubSpot() {
+    // Check if the hbspt library is finally loaded
     if (typeof hbspt !== 'undefined') {
       hbspt.forms.create({
         region: "na2",
         portalId: "245775901",
         formId: "adf6daa9-5713-4815-851e-b503caa30190",
-        target: "#form-target",
+        target: "#form-target-container",
         onFormReady: function($form) {
-          // Inject styles directly into the iframe head
-          const doc = $form.ownerDocument;
-          const style = doc.createElement('style');
+          // Reach inside the iframe document
+          const iframeDoc = $form.ownerDocument;
+          const style = iframeDoc.createElement('style');
+          
+          // ADD YOUR CSS HERE - Use !important to override HubSpot defaults
           style.innerHTML = `
-            .hs-button { background: #ff0000 !important; border: none !important; }
-            .hs-form-field label { color: blue !important; }
-            input.hs-input { border: 2px solid #ccc !important; }
+            .hs-button { background: #ff0000 !important; border: none !important; color: #fff !important; }
+            .hs-form-field label { color: blue !important; font-weight: bold !important; }
+            input.hs-input { border: 1px solid #333 !important; border-radius: 4px !important; }
           `;
-          doc.head.appendChild(style);
+          
+          iframeDoc.head.appendChild(style);
+          console.log("CSS injected successfully.");
         }
       });
     } else {
-      setTimeout(loadForm, 100);
+      // If not ready, wait 100ms and try again
+      setTimeout(injectHubSpot, 100);
     }
   }
-  loadForm();
+  
+  // Start the check
+  injectHubSpot();
 </script>
