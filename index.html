@@ -1,67 +1,36 @@
-<!-- HubSpot V3 Embed -->
-<script src="https://js-na2.hsforms.net/forms/embed/245775901.js"></script>
+<!-- 1. Load the HubSpot script WITHOUT "defer" so the hbspt variable is ready immediately -->
+<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
 
+<!-- 2. Define where the form should appear -->
+<div id="my-custom-form-container"></div>
 
-<!--<div 
-  class="hs-form-frame" 
-  data-region="na2" 
-  data-form-id="adf6daa9-5713-4815-851e-b503caa30190" 
-  data-portal-id="245775901">
-</div>-->
+<!-- 3. Create the form and inject CSS -->
 <script>
   hbspt.forms.create({
-  portalId: "245775901",
-    formId: "adf6daa9-5713-4815-851e-b503caa30190",
     region: "na2",
-	target: "#hubspot-form",
-  onFormReady: function($form) {
-    // 1. Get the document inside the iframe
-    var iframeDoc = $form[0].ownerDocument;
-    
-    // 2. Create your custom style tag
-    var style = iframeDoc.createElement('style');
-    style.innerHTML = `
-    .hs-button { background-color: #ff0000 !important; border-radius: 5px; }
-      .hs-form-field label { color: blue; font-weight: bold; }
-      /* END CUSTOM CSS */
-      /* PASTE YOUR CUSTOM CSS BELOW */
-      
-    `;
-    
-    // 3. Inject it into the iframe's head
-    iframeDoc.head.appendChild(style);
-  }
-});
-</script>
-<!--<script>
-  var formLoaded = false;
+    portalId: "245775901",
+    formId: "adf6daa9-5713-4815-851e-b503caa30190",
+    target: "#my-custom-form-container", // Tells HubSpot where to put the form
+    onFormReady: function($form) {
+      // Access the document inside the iframe
+      var iframeDoc = $form[0].ownerDocument;
+      var head = iframeDoc.head || iframeDoc.getElementsByTagName('head')[0];
+      var style = iframeDoc.createElement('style');
 
-  var checkForm = setInterval(function() {
-    var iframe = document.querySelector('.hs-form-frame iframe');
+      // YOUR CUSTOM CSS GOES HERE
+      var css = `
+        .hs-button { background: #ff0000 !important; border: none !important; }
+        .hs-form-field label { color: blue !important; }
+        input[type="text"] { border-radius: 10px !important; }
+      `;
 
-    if (iframe) {
-      // Make sure iframe is fully loaded, not just inserted into DOM
-      if (iframe.contentDocument && iframe.contentDocument.readyState === 'complete') {
-        if (!formLoaded) {
-          formLoaded = true;          // prevent alert from firing twice
-          clearInterval(checkForm);
-
-          console.log('HubSpot V3 form fully loaded!');
-          alert('Form has been loaded!');
-
-          // ✅ Do your custom DOM changes here
-          // Example: access form elements inside iframe
-          // var innerForm = iframe.contentDocument.querySelector('form');
-          // var inputs = iframe.contentDocument.querySelectorAll('input');
-
-
-        }
+      style.type = 'text/css';
+      if (style.styleSheet) {
+        style.styleSheet.cssText = css;
+      } else {
+        style.appendChild(iframeDoc.createTextNode(css));
       }
+      head.appendChild(style);
     }
-  }, 300);
-
-  // Safety: stop polling after 15 seconds to avoid infinite loop
-  setTimeout(function() {
-    clearInterval(checkForm);
-  }, 15000);
-</script>-->
+  });
+</script>
