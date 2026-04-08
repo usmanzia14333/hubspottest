@@ -1,14 +1,24 @@
 <!-- HubSpot V3 Embed -->
 <script src="https://js-na2.hsforms.net/forms/embed/245775901.js" defer></script>
 
-<div 
+<!--<div 
   class="hs-form-frame" 
   data-region="na2" 
   data-form-id="adf6daa9-5713-4815-851e-b503caa30190" 
   data-portal-id="245775901">
-</div>
-
+</div>-->
 <script>
+hbspt.forms.create({
+  region: "na2",
+  portalId: "245775901",
+  formId: "adf6daa9-5713-4815-851e-b503caa30190",
+  onFormReady: function($form) {
+    // Inject custom styles or classes here
+    $form.find('input[type="submit"]').css('background-color', '#ff0000');
+  }
+});
+</script>
+<!--<script>
   var formLoaded = false;
 
   var checkForm = setInterval(function() {
@@ -39,4 +49,4 @@
   setTimeout(function() {
     clearInterval(checkForm);
   }, 15000);
-</script>
+</script>-->
