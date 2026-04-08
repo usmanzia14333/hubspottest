@@ -1,37 +1,40 @@
-<!-- 1. Use the GLOBAL v2.js script (required for custom JS callbacks) -->
-<!-- REMOVE your old .../245775901.js script -->
-<script charset="utf-8" type="text/javascript" src="https://js-na2.hsforms.net/forms/embed/v2.js"></script>
+<script charset="utf-8" type="text/javascript" src="https://hsforms.net"></script>
 
-<!-- 2. The container where your form will load -->
-<div id="hubspot-form-container"></div>
+<div id="hubspot-form-target"></div>
 
-<!-- 3. The script to load the form and inject your CSS -->
 <script>
-  // Ensure the HubSpot library is fully loaded before running
-  window.onload = function() {
-    if (typeof hbspt !== 'undefined') {
-      hbspt.forms.create({
-        region: "na2",
-        portalId: "245775901",
-        formId: "adf6daa9-5713-4815-851e-b503caa30190",
-        target: "#hubspot-form-container",
-        onFormReady: function($form) {
-          // Reach inside the iframe document
-          var iframeDoc = $form[0].ownerDocument; 
-          var style = iframeDoc.createElement('style');
-          
-          // ADD YOUR CSS HERE
-          style.innerHTML = `
-            .hs-button { background-color: #ff0000 !important; border-radius: 4px !important; }
-            .hs-form-field label { color: #333 !important; font-weight: 600 !important; }
-            input[type="text"], input[type="email"] { color: #ff0000 !important; }
-          `;
-          
-          iframeDoc.head.appendChild(style);
-        }
-      });
-    } else {
-      console.error("HubSpot script (v2.js) failed to load.");
+  hbspt.forms.create({
+    region: "na2",
+    portalId: "245775901",
+    formId: "adf6daa9-5713-4815-851e-b503caa30190",
+    target: "#hubspot-form-target",
+    onFormReady: function($form) {
+      // 1. Give the iframe a millisecond to finish internal rendering
+      setTimeout(function() {
+        var iframeDoc = $form[0].ownerDocument;
+        var styleTag = iframeDoc.createElement('style');
+        
+        // 2. Use !important on everything to fight HubSpot's default CSS
+        styleTag.innerHTML = `
+          body { background: transparent !important; }
+          .hs-button { 
+            background: #ff0000 !important; 
+            border: none !important; 
+            padding: 20px !important; 
+          }
+          .hs-form-field label { 
+            color: blue !important; 
+            font-size: 18px !important; 
+          }
+          input.hs-input { 
+            border: 2px solid red !important; 
+            border-radius: 0px !important; 
+          }
+        `;
+        
+        iframeDoc.head.appendChild(styleTag);
+        console.log("CSS Injected into Iframe");
+      }, 100); 
     }
-  };
+  });
 </script>
