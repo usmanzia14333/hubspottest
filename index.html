@@ -1,50 +1,51 @@
-<!-- 1. Use the most stable global script endpoint -->
-<script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/v2.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 1. Use ONLY this global script -->
+    <script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/v2.js"></script>
+</head>
+<body>
 
-<!-- 2. This is where your form will load -->
-<div id="hubspot-form-target"></div>
+    <!-- 2. Keep this DIV empty. Do NOT put other scripts inside it. -->
+    <div id="hubspot-form-target"></div>
 
-<script>
-  // Ensure the HubSpot library is ready before creating the form
-  function loadHubSpotForm() {
-    if (window.hbspt) {
-      hbspt.forms.create({
-        region: "na2",
-        portalId: "245775901",
-        formId: "adf6daa9-5713-4815-851e-b503caa30190",
-        target: "#hubspot-form-target",
-        onFormReady: function($form) {
-          // 'onFormReady' provides the form element inside the iframe.
-          // We grab its ownerDocument to access the iframe's <head>.
-          var iframeDoc = $form.ownerDocument;
-          var styleTag = iframeDoc.createElement('style');
+    <script>
+      function loadHubSpotForm() {
+        if (window.hbspt) {
+          // Clear the target first to prevent double-loading
+          document.getElementById('hubspot-form-target').innerHTML = '';
           
-          // ADD YOUR CSS HERE
-          // Use !important on everything to override HubSpot's internal styles.
-          styleTag.innerHTML = `
-            .hs-button { 
-               background: #ff0000 !important; 
-               border-radius: 0px !important; 
-               font-weight: bold !important;
+          hbspt.forms.create({
+            region: "na2",
+            portalId: "245775901",
+            formId: "adf6daa9-5713-4815-851e-b503caa30190",
+            target: "#hubspot-form-target",
+            onFormReady: function($form) {
+              // Get the iframe document
+              var iframeDoc = $form.ownerDocument;
+              var styleTag = iframeDoc.createElement('style');
+              
+              styleTag.innerHTML = `
+                /* This targets the button inside the iframe */
+                .hs-button { 
+                   background: #ff0000 !important; 
+                   border-radius: 0px !important; 
+                }
+                /* This targets labels inside the iframe */
+                .hs-form-field label { 
+                   color: blue !important; 
+                }
+              `;
+              
+              iframeDoc.head.appendChild(styleTag);
+              console.log("CSS injected successfully.");
             }
-            .hs-form-field label { 
-               color: blue !important; 
-               font-family: sans-serif !important;
-            }
-            input.hs-input { 
-               border: 2px solid #000 !important; 
-            }
-          `;
-          
-          iframeDoc.head.appendChild(styleTag);
-          console.log("CSS injected successfully into HubSpot iframe.");
+          });
+        } else {
+          setTimeout(loadHubSpotForm, 100);
         }
-      });
-    } else {
-      // If script isn't ready yet, check again in 100ms
-      setTimeout(loadHubSpotForm, 100);
-    }
-  }
-
-  loadHubSpotForm();
-</script>
+      }
+      loadHubSpotForm();
+    </script>
+</body>
+</html>
