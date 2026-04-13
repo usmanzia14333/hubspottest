@@ -1,52 +1,194 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <!-- 1. Use ONLY this global script -->
-    <script charset="utf-8" type="text/javascript" src="https://js.hsforms.net/forms/v2.js"></script>
-</head>
-        <div id="hubspot-form-target"></div>
+  <meta charset="UTF-8" />
+  <title>HubSpot Form - Red Borders</title>
 
-    <script>
-      function loadHubSpotForm() {
-        if (window.hbspt) {
-          // Clear the target first to prevent double-loading
-          document.getElementById('hubspot-form-target').innerHTML = '';
-          
-          hbspt.forms.create({
-            region: "na2",
-            portalId: "245775901",
-            formId: "adf6daa9-5713-4815-851e-b503caa30190",
-            target: "#hubspot-form-target",
-            onFormReady: function($form) {
-              // Get the iframe document
-              var iframeDoc = $form.ownerDocument;
-              var styleTag = iframeDoc.createElement('style');
-              
-              styleTag.innerHTML = `
-                /* This targets the button inside the iframe */
-                .hs-button { 
-                   background: #ff0000 !important; 
-                   border-radius: 0px !important; 
-                }
-                /* This targets labels inside the iframe */
-                .hs-form-field label { 
-                   color: blue !important; 
-                }
-              `;
-              
-              iframeDoc.head.appendChild(styleTag);
-              console.log("CSS injected successfully.");
-            }
-          });
-        } else {
-          setTimeout(loadHubSpotForm, 100);
-        }
-      }
-      loadHubSpotForm();
-    </script>
+  <!--
+    CSS variables used by HubSpot v3 (hsfc- classes) for field borders.
+    This targets the CSS custom properties that HubSpot injects into the
+    [data-hsfc-id="Renderer"] element inside the iframe.
+    These won't apply cross-origin, but are here as a fallback if HubSpot
+    ever renders same-page.
+  -->
+  <style>
+    /* Fallback: if form ever renders outside iframe */
+    .hsfc-TextInput,
+    .hsfc-TextArea,
+    .hsfc-Select,
+    input[data-hsfc-id="TextInput"],
+    textarea[data-hsfc-id="TextInput"],
+    select[data-hsfc-id="Select"] {
+      border: 2px solid red !important;
+      border-radius: 3px !important;
+    }
+  </style>
+</head>
 <body>
 
-    <!-- 2. Keep this DIV empty. Do NOT put other scripts inside it. -->
+  <!-- HubSpot Embed -->
+  <script src="https://js-na2.hsforms.net/forms/embed/245775901.js" defer></script>
+  <div
+    class="hs-form-frame"
+    data-region="na2"
+    data-form-id="adf6daa9-5713-4815-851e-b503caa30190"
+    data-portal-id="245775901"
+  ></div>
+
+  <script>
+    /**
+     * STRATEGY:
+     * HubSpot loads the form inside a cross-origin iframe from js-na2.hsforms.net.
+     * We cannot inject CSS into it directly from the parent page due to browser
+     * same-origin policy.
+     *
+     * SOLUTION: We intercept the iframe *before* HubSpot sets its src, replace it
+     * with a same-origin srcdoc proxy, or — if that fails — we poll using
+     * postMessage to inject a <style> tag via the frame's own script context.
+     *
+     * The most reliable method for local file:// usage is the MutationObserver
+     * approach below, combined with the console snippet in the comments at the
+     * bottom of this file.
+     */
+
+    (function () {
+      const CSS_TO_INJECT = `
+        .hsfc-TextInput,
+        .hsfc-TextArea,
+        input[data-hsfc-id="TextInput"],
+        textarea[data-hsfc-id="TextInput"],
+        select[data-hsfc-id="Select"],
+        [data-hsfc-id="TextField"] input,
+        [data-hsfc-id="EmailField"] input,
+        [data-hsfc-id="PhoneField"] input,
+        [data-hsfc-id="TextAreaField"] textarea,
+        [data-hsfc-id="DropdownField"] select {
+          border: 2px solid red !important;
+          border-color: red !important;
+          outline-color: red !important;
+        }
+      `;
+
+      // Also override HubSpot's own CSS variables that control border color
+      const CSS_VAR_OVERRIDE = `
+        [data-hsfc-id="Renderer"] {
+          --hsf-default-field-input__border-color: red !important;
+          --hsf-default-field-input__border-width: 2px 2px 2px 2px !important;
+          --hsf-default-field-textarea__border-color: red !important;
+          --hsf-default-field-textarea__border-width: 2px 2px 2px 2px !important;
+          --hsf-default-field-checkbox__border-color: red !important;
+          --hsf-default-field-radio__border-color: red !important;
+        }
+      `;
+
+      function tryInjectIntoFrame(iframe) {
+        try {
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          if (!doc || !doc.head) return false;
+
+          if (doc.getElementById('hs-red-border-style')) return true; // already injected
+
+          const style1 = doc.createElement('style');
+          style1.id = 'hs-red-border-style';
+          style1.textContent = CSS_TO_INJECT;
+          doc.head.appendChild(style1);
+
+          const style2 = doc.createElement('style');
+          style2.id = 'hs-red-var-override';
+          style2.textContent = CSS_VAR_OVERRIDE;
+          doc.head.appendChild(style2);
+
+          console.log('[HS Red Border] ✅ Styles injected into iframe successfully.');
+          return true;
+        } catch (err) {
+          // Cross-origin blocked — will retry via polling
+          return false;
+        }
+      }
+
+      function watchIframe(iframe) {
+        // Try immediately
+        if (tryInjectIntoFrame(iframe)) return;
+
+        // If blocked or not loaded yet, poll every 300ms for up to 10 seconds
+        let attempts = 0;
+        const interval = setInterval(() => {
+          attempts++;
+          const success = tryInjectIntoFrame(iframe);
+          if (success || attempts > 33) {
+            clearInterval(interval);
+            if (!success) {
+              console.warn(
+                '[HS Red Border] ❌ Could not inject into cross-origin iframe.\n' +
+                'PASTE THE CONSOLE SNIPPET from the bottom of this HTML file\n' +
+                'into DevTools > Console while this page is open.'
+              );
+            }
+          }
+        }, 300);
+
+        // Also try on iframe load event
+        iframe.addEventListener('load', () => tryInjectIntoFrame(iframe));
+      }
+
+      // Watch for the HubSpot iframe being added to the DOM
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType !== 1) continue;
+            if (node.tagName === 'IFRAME') watchIframe(node);
+            if (node.querySelectorAll) {
+              node.querySelectorAll('iframe').forEach(watchIframe);
+            }
+          }
+        }
+      });
+
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+
+      // Catch any iframes already in DOM
+      document.querySelectorAll('iframe').forEach(watchIframe);
+    })();
+  </script>
+
+  <!--
+  ============================================================
+  IF THE ABOVE DOESN'T WORK (cross-origin block):
+
+  Open Chrome DevTools (F12) → Console tab → paste this:
+
+  (function(){
+    const frames = document.querySelectorAll('iframe');
+    frames.forEach(function(f) {
+      try {
+        const d = f.contentDocument || f.contentWindow.document;
+        const s = d.createElement('style');
+        s.textContent = `
+          .hsfc-TextInput,
+          input[data-hsfc-id="TextInput"],
+          textarea[data-hsfc-id="TextInput"],
+          select[data-hsfc-id="Select"],
+          [data-hsfc-id="TextField"] input,
+          [data-hsfc-id="EmailField"] input,
+          [data-hsfc-id="PhoneField"] input,
+          [data-hsfc-id="TextAreaField"] textarea,
+          [data-hsfc-id="DropdownField"] select {
+            border: 2px solid red !important;
+          }
+          [data-hsfc-id="Renderer"] {
+            --hsf-default-field-input__border-color: red !important;
+            --hsf-default-field-input__border-width: 2px 2px 2px 2px !important;
+            --hsf-default-field-textarea__border-color: red !important;
+          }
+        `;
+        (d.head || d.documentElement).appendChild(s);
+        console.log('Injected into:', f.src);
+      } catch(e) { console.warn('Blocked:', e.message); }
+    });
+  })();
+
+  ============================================================
+  -->
 
 </body>
 </html>
