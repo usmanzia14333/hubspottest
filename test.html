@@ -5,8 +5,6 @@
 </head>
 <body>
 
-
-
 <div id="hubspot-form"></div>
 
 <script charset="utf-8" type="text/javascript" src="//js-na2.hsforms.net/forms/embed/v2.js"></script>
@@ -15,14 +13,19 @@
     portalId: "245775901",
     formId: "e6f8d243-a3e2-454e-bb8c-8035578a00b5",
     region: "na2",
-	target: "#hubspot-form",
-	onFormReady: function ($form) {
-		console.log('test');
-		alert("Form has been loaded!");
-	}
+    target: "#hubspot-form",
+    onFormReady: function ($form) {
+        console.log('test');
+        alert("Form has been loaded!");
+
+        // Apply red border to all fields
+        $form.find('input, textarea, select').css({
+            'border': '2px solid red',
+            'border-radius': '4px'
+        });
+    }
   });
 </script>
-
 
 </body>
 </html>
