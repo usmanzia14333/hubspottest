@@ -18,27 +18,35 @@
     onFormReady: function (form) {
         console.log('Form loaded');
 
-        // Wait a bit to ensure fields are rendered
+        // Wait for HubSpot to fully render the DOM
         setTimeout(() => {
-            // Example: attach to FIRST input (for testing)
-            const input = form.querySelector('input');
+
+            const input = document.getElementById('firstname-e6f8d243-a3e2-454e-bb8c-8035578a00b5');
 
             if (!input) {
-                console.log("No input field found");
+                console.log("Field not found");
                 return;
             }
 
-            // Initialize Google Places Autocomplete
+            // Initialize autocomplete on THIS field
             const autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ['geocode'] // or ['(cities)'] for cities only
+                types: ['geocode'] // or ['(cities)']
+            });
+
+            // Optional: restrict to usa
+            autocomplete.setComponentRestrictions({
+                country: "usa"
             });
 
             autocomplete.addListener('place_changed', function () {
                 const place = autocomplete.getPlace();
                 console.log('Selected place:', place.formatted_address);
+
+                // Force value update (sometimes needed)
+                input.value = place.formatted_address;
             });
 
-        }, 500);
+        }, 800); // slight delay helps with HubSpot rendering
     }
   });
 </script>
