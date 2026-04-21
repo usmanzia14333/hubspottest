@@ -18,35 +18,38 @@
     onFormReady: function (form) {
         console.log('Form loaded');
 
-        // Wait for HubSpot to fully render the DOM
-        setTimeout(() => {
+        // Retry until field exists (HubSpot can be slow)
+        let tries = 0;
 
-            const input = document.getElementById('firstname-e6f8d243-a3e2-454e-bb8c-8035578a00b5');
+        const interval = setInterval(() => {
+            const input = form.querySelector('input[name="firstname"]');
 
-            if (!input) {
-                console.log("Field not found");
-                return;
+            if (input) {
+                clearInterval(interval);
+                console.log("Field found");
+
+                const autocomplete = new google.maps.places.Autocomplete(input, {
+                    types: ['geocode']
+                });
+
+                // Restrict to Pakistan (optional)
+                autocomplete.setComponentRestrictions({
+                    country: "pk"
+                });
+
+                autocomplete.addListener('place_changed', function () {
+                    const place = autocomplete.getPlace();
+                    input.value = place.formatted_address || '';
+                });
+
+            } else {
+                tries++;
+                if (tries > 10) {
+                    clearInterval(interval);
+                    console.log("Field not found after retries");
+                }
             }
-
-            // Initialize autocomplete on THIS field
-            const autocomplete = new google.maps.places.Autocomplete(input, {
-                types: ['geocode'] // or ['(cities)']
-            });
-
-            // Optional: restrict to usa
-            autocomplete.setComponentRestrictions({
-                country: "usa"
-            });
-
-            autocomplete.addListener('place_changed', function () {
-                const place = autocomplete.getPlace();
-                console.log('Selected place:', place.formatted_address);
-
-                // Force value update (sometimes needed)
-                input.value = place.formatted_address;
-            });
-
-        }, 800); // slight delay helps with HubSpot rendering
+        }, 300); // check every 300ms
     }
   });
 </script>
