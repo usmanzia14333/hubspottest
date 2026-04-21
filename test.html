@@ -6,7 +6,7 @@
 <body>
 
 <div id="hubspot-form"></div>
-
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_3zlUad8GWJrtxQgfhfUQm_d4A3jhfgM&libraries=places"></script>
 <script charset="utf-8" type="text/javascript" src="//js-na2.hsforms.net/forms/embed/v2.js"></script>
 <script>
   hbspt.forms.create({
@@ -14,17 +14,31 @@
     formId: "e6f8d243-a3e2-454e-bb8c-8035578a00b5",
     region: "na2",
     target: "#hubspot-form",
+
     onFormReady: function (form) {
-        console.log('test');
-        alert("Form has been loaded!");
+        console.log('Form loaded');
 
-        // Select fields using native JS
-        const fields = form.querySelectorAll('input, textarea, select');
+        // Wait a bit to ensure fields are rendered
+        setTimeout(() => {
+            // Example: attach to FIRST input (for testing)
+            const input = form.querySelector('input');
 
-        fields.forEach(field => {
-            field.style.border = '2px solid red';
-            field.style.borderRadius = '4px';
-        });
+            if (!input) {
+                console.log("No input field found");
+                return;
+            }
+
+            // Initialize Google Places Autocomplete
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode'] // or ['(cities)'] for cities only
+            });
+
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                console.log('Selected place:', place.formatted_address);
+            });
+
+        }, 500);
     }
   });
 </script>
