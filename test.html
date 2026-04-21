@@ -14,14 +14,16 @@
     formId: "e6f8d243-a3e2-454e-bb8c-8035578a00b5",
     region: "na2",
     target: "#hubspot-form",
-    onFormReady: function ($form) {
+    onFormReady: function (form) {
         console.log('test');
         alert("Form has been loaded!");
 
-        // Apply red border to all fields
-        $form.find('input, textarea, select').css({
-            'border': '2px solid red',
-            'border-radius': '4px'
+        // Select fields using native JS
+        const fields = form.querySelectorAll('input, textarea, select');
+
+        fields.forEach(field => {
+            field.style.border = '2px solid red';
+            field.style.borderRadius = '4px';
         });
     }
   });
