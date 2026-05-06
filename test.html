@@ -16,41 +16,48 @@
     target: "#hubspot-form",
 
     onFormReady: function (form) {
-        console.log('Form loaded');
+    console.log('Form loaded');
 
-        // Retry until field exists (HubSpot can be slow)
-        let tries = 0;
+    // Apply red border to all fields
+    const fields = form.querySelectorAll('input, textarea, select');
 
-        const interval = setInterval(() => {
-            const input = form.querySelector('input[name="firstname"]');
+    fields.forEach(field => {
+        field.style.border = '2px solid red';
+        field.style.borderRadius = '4px'; // optional (looks nicer)
+    });
 
-            if (input) {
+    // Existing autocomplete code...
+    let tries = 0;
+
+    const interval = setInterval(() => {
+        const input = form.querySelector('input[name="firstname"]');
+
+        if (input) {
+            clearInterval(interval);
+            console.log("Field found");
+
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode']
+            });
+
+            autocomplete.setComponentRestrictions({
+                country: "usa"
+            });
+
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                input.value = place.formatted_address || '';
+            });
+
+        } else {
+            tries++;
+            if (tries > 10) {
                 clearInterval(interval);
-                console.log("Field found");
-
-                const autocomplete = new google.maps.places.Autocomplete(input, {
-                    types: ['geocode']
-                });
-
-                // Restrict to Pakistan (optional)
-                autocomplete.setComponentRestrictions({
-                    country: "usa"
-                });
-
-                autocomplete.addListener('place_changed', function () {
-                    const place = autocomplete.getPlace();
-                    input.value = place.formatted_address || '';
-                });
-
-            } else {
-                tries++;
-                if (tries > 10) {
-                    clearInterval(interval);
-                    console.log("Field not found after retries");
-                }
+                console.log("Field not found after retries");
             }
-        }, 300); // check every 300ms
-    }
+        }
+    }, 300);
+}
   });
 </script>
 
